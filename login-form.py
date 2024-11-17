@@ -1,5 +1,6 @@
 from tkinter import *
-
+from tkinter import messagebox
+import sqlite3
 
 base = Tk()
 lblFont = ('Arial bold', 25)
@@ -23,12 +24,37 @@ def reset_method():
 
 def signUp_method():
     def reset_method2():
+        getFirstNameText = firstNameText.get()
+        getLastNameText = lastNameText.get()
+        getEmailText = emailText.get()
+        getPasswordText = passwordText.get()
+        getCnfPassText = cnfPassText.get()
+
         firstNameText.delete(0, len(getFirstNameText))
         lastNameText.delete(0, len(getLastNameText))
         emailText.delete(0, len(getEmailText))
         passwordText.delete(0, len(getPasswordText))
         cnfPassText.delete(0, len(getCnfPassText))
         firstNameText.focus()
+
+    def store_data():
+        getFirstNameText = firstNameText.get()
+        getLastNameText = lastNameText.get()
+        getEmailText = emailText.get()
+        getPasswordText = passwordText.get()
+        getCnfPassText = cnfPassText.get()
+
+        if getPasswordText != getCnfPassText:
+            messagebox.showerror(message='Password incorrect')
+        else:
+            q = "insert into signup_details values('{0}','{1}','{2}','{3}')".format(getFirstNameText, getLastNameText, getEmailText, getPasswordText)
+            con = sqlite3.connect('sign-in-form.db')
+            con.execute(q)
+            con.commit()
+            con.close()
+
+            messagebox.showinfo(message='Data Saved Succesfully...')
+            base2.destroy()
 
     base.destroy()
     base2 = Tk()
@@ -47,17 +73,11 @@ def signUp_method():
     firstNameText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid')
     lastNameText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid')
     emailText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid')
-    passwordText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid')
-    cnfPassText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid')
+    passwordText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid', show='*')
+    cnfPassText = Entry(base2, width=15, bg=base2BG, font=textFont, border=1, relief='solid', show='*')
 
-    # Getting Text
-    getFirstNameText = firstNameText.get()
-    getLastNameText = lastNameText.get()
-    getEmailText = emailText.get()
-    getPasswordText = passwordText.get()
-    getCnfPassText = cnfPassText.get()
 
-    signUpBtn = Button(base2, text='SIGN-UP', font=btnFont, border=5, relief='groove', bg=base2BG)
+    signUpBtn2 = Button(base2, text='SIGN-UP', font=btnFont, border=5, relief='groove', bg=base2BG, command=store_data)
     resetBtn2 = Button(base2, text='RESET', font=btnFont, border=5, relief='groove', bg=base2BG, command=reset_method2)
 
     firstNameLbl.grid(row=0, column=0, padx=(50, 0), pady=(50, 10))
@@ -72,7 +92,7 @@ def signUp_method():
     passwordText.grid(row=3, column=1, padx=(100, 0), pady=(15, 0))
     cnfPassText.grid(row=4, column=1, padx=(100, 0), pady=(15, 0))
 
-    signUpBtn.grid(row=5, column=0, padx=(130, 0), pady=(50, 0))
+    signUpBtn2.grid(row=5, column=0, padx=(130, 0), pady=(50, 0))
     resetBtn2.grid(row=5, column=1, padx=(80, 0), pady=(50, 0))
 
     base2.mainloop()
@@ -83,26 +103,23 @@ passLbl = Label(base, text='Enter Password', font=lblFont, bg=baseBG)
 userText = Entry(base, width=15, bg=baseBG, font=textFont, border=1, relief='solid')
 passText = Entry(base, width=15, bg=baseBG, font=textFont, show='*', border=1, relief='solid')
 
-userLbl.place(x=70, y=70)
-passLbl.place(x=70, y=140)
-userText.place(x=370, y=70)
-passText.place(x=370, y=140)
-
-newUserLbl = Label(base, text='New User?', font=lblFont, bg=baseBG)
-hereLbl = Label(base, text='Here', font=lblFont, bg=baseBG)
-
-newUserLbl.place(x=80, y=350)
-hereLbl.place(x=390, y=350)
-
 signInBtn = Button(base, text='SIGN-IN', font=btnFont, border=3, relief='groove', bg=baseBG)
 resetBtn = Button(base, text='RESET', font=btnFont, border=3, relief='groove', bg=baseBG, command=reset_method)
 
-signInBtn.place(x=120, y=260)
-resetBtn.place(x=450, y=260)
+newUserLbl = Label(base, text='New User?', font=('Arial', 20), bg=baseBG)
+signUpBtn = Button(base, text='SIGN-UP', font=('Arial', 20), underline=2, relief='flat', command=signUp_method, bg=baseBG)
+hereLbl = Label(base, text='Here', font=('Arial', 20), bg=baseBG)
 
+userLbl.grid(row=0, column=0, padx=(80, 0), pady=(50, 10))
+passLbl.grid(row=1, column=0, padx=(80, 0), pady=(50, 10))
+userText.grid(row=0, column=1, padx=(80, 0), pady=(50, 10))
+passText.grid(row=1, column=1, padx=(80, 0), pady=(50, 10))
 
-signUpBtn = Button(base, text='SIGN-UP', font=('Arial Bold', 22), underline=2, relief='flat', width=7, command=signUp_method, bg=baseBG)
-signUpBtn.place(x=250, y=345)
+signInBtn.grid(row=2, column=0, padx=(110, 0), pady=(70, 10))
+resetBtn.grid(row=2, column=1, padx=(40, 0), pady=(70, 10))
 
+newUserLbl.grid(row=3, column=0, padx=(150, 10), pady=(50, 10))
+signUpBtn.place(x=300, y=388)
+hereLbl.place(x=432, y=396)
 
 base.mainloop()
